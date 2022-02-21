@@ -56,24 +56,6 @@ class RBM:
             H = self._in_out(X)
             X_rec = self._out_in(H)
             iter_bar.set_description(f"Reconstruction : {np.mean((X - X_rec) ** 2)}")
+        iter_bar.close()
         batch_bar.close()
 
-
-if __name__ == "__main__":
-    train_data = pd.read_csv("train.csv", delimiter=",")
-    labels = train_data["label"].tolist()
-    p_input = 784
-    q_input = 100
-    rbm = RBM(p_input, q_input)
-    X_train = train_data.iloc[:, 1:].to_numpy().astype('int')
-    print(X_train.shape, X_train)
-    rbm.train(X_train, 10, 10, 10e-4)
-    outcome = rbm._out_in((np.random.rand(q_input) < 0.5) * 1)
-    img = np.zeros((24, 24))
-    for i in range(1000):
-        v = (np.random.rand(1, 784) < outcome) * 1
-        img += v.reshape(24, 24)
-
-    img /= 1000
-    plt.imshow(img, cmap="Greys")
-    plt.show()
