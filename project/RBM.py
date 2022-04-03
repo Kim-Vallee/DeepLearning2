@@ -78,6 +78,6 @@ class RBM:
             v = (np.random.rand(nb_img, self.p) < self.sortie_entree(h)) * 1
         return v
 
-    def calcul_softmax(self, X: np.ndarray):
+    def calcul_softmax(self, X: np.ndarray) -> np.ndarray:
         h = self.entree_sortie(X)
         return np.exp(h) / np.sum(np.exp(h))

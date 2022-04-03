@@ -28,7 +28,7 @@ class DNN:
         """
         self._DNN: List[RBM] = [None] * (network_shape.size - 1)
         for i in range(network_shape.size - 1):
-            self._DNN[network_shape.size - 2 - i] = RBM(network_shape[i], network_shape[i + 1])
+            self._DNN[i] = RBM(network_shape[i], network_shape[i + 1])
 
     def pretrain(self, X: np.ndarray, nb_iter: int, learning_rate: float, minibatch_size: int):
         """
@@ -45,7 +45,7 @@ class DNN:
         """
 
         x = X
-        for rbm in self._DNN[::-1]:
+        for rbm in self._DNN:
             rbm.train(x, nb_iter, minibatch_size, learning_rate, verbose=False)
             x = rbm.entree_sortie(x)
 
@@ -61,21 +61,22 @@ class DNN:
         :rtype: np.ndarray
         """
 
-        v = 0.5
+        h = 0.5
         for rbm in self._DNN[::-1]:
-            v = rbm.generer_image_RBM(nb_iter, nb_img, tirage_initial=v)
+            v = (np.random.rand(nb_img, rbm.q) < h) * 1
+            for j in range(nb_iter):
+                h = (np.random.rand(nb_img, rbm.p) < rbm.sortie_entree(v)) * 1
+                v = (np.random.rand(nb_img, rbm.q) < rbm.entree_sortie(h)) * 1
 
-        return v
+        return h
 
-    def entree_sortie_reseau(self, X: np.ndarray) -> Tuple[List, List]:
+    def entree_sortie_reseau(self, X: np.ndarray) -> Tuple[List, np.ndarray]:
         sorties = []
-        probs = []
         h = X
-        for rbm in self._DNN:
+        for rbm in self._DNN[:-1]:
             h = rbm.entree_sortie(h)
             sorties.append(h)
-            probs.append(rbm.calcul_softmax(h))
-
+        probs = self._DNN[-1].calcul_softmax(h)
         return sorties, probs
 
     def retropropagation(self, X: np.ndarray, labels: np.ndarray, nb_iter: int, learning_rate: float,
@@ -101,26 +102,34 @@ class DNN:
                 labels_minibatch = labels_copy[i: min(i + minibatch_size, N)]
                 batch_size = X_minibatch.shape[0]
                 sorties, probs = self.entree_sortie_reseau(X_minibatch)
-                estimated_labels = sorties[-1]
+                estimated_labels = probs
 
                 # Computing the gradient
                 dZ, dw, db, dA = [], [], [], []
                 dA.append(estimated_labels - labels_minibatch)
                 for k in range(len(self._DNN) - 1, -1, -1):
                     dZ.append(dA[-1])  # No activation function
-                    dw.append(sorties[k].T @ dZ[-1] / batch_size)
+                    if k == 0:
+                        dw.append(X_minibatch.T @ dZ[-1] / batch_size)
+                    else:
+                        dw.append(sorties[k-1].T @ dZ[-1] / batch_size)
                     db.append(np.sum(dZ[-1], axis=0) / batch_size)
-                    dA.append(dZ[-1].T @ self._DNN[k].w)
+                    dA.append(dZ[-1] @ self._DNN[k].w.T)
+
+                # Reverting the gradient
+                dw = dw[::-1]
+                db = db[::-1]
 
                 # Updating the weights
                 for k in range(len(self._DNN)):
                     self._DNN[k].w -= learning_rate * dw[k]
                     self._DNN[k].b -= learning_rate * db[k]
 
-                if verbose:
-                    print(cost(labels_minibatch, estimated_labels))  # BCE
+            if verbose:
+                _, probs = self.entree_sortie_reseau(X)
+                print(cost(labels, probs))  # BCE
 
-    def test(self, X: np.ndarray, labels: np.ndarray):
+    def test(self, X: np.ndarray, labels: np.ndarray) -> float:
         sorties, probs = self.entree_sortie_reseau(X)
         estimated_labels = sorties[-1]
         error_rate = np.sum(estimated_labels != labels) / X.shape[0]
