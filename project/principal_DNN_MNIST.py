@@ -18,12 +18,12 @@ from project.DNN import DNN
 import matplotlib.pyplot as plt
 import pickle
 
-network_size = [784, 100, 10]
-nb_iter_train = 100
+network_size = [784, 100, 50, 10]
+nb_iter_train = 1000
 nb_iter_generate = 50
-lr = 0.05
+lr = 0.1
 mini_batch_size = 100
-data_size = 1000
+data_size = 2000
 
 mndata = MNIST('data/MNIST')
 images_train, labels_train = mndata.load_training()
@@ -54,12 +54,12 @@ images_test = (images_test > 127) * 1
 labels_train = np.eye(10)[labels_train]
 labels_test = np.eye(10)[labels_test]
 
-load_pretrained_dbn = False
+load_pretrained_dbn = True
 
 if not load_pretrained_dbn:
     dbn = DNN(np.array(network_size))
     dbn.pretrain(images_train, nb_iter_train, lr, mini_batch_size)
-    dbn.retropropagation(images_train, labels_train, nb_iter_train, lr, mini_batch_size, True)
+    # dbn.retropropagation(images_train, labels_train, nb_iter_train, lr, mini_batch_size, True)
     error_rate = dbn.test(images_test, labels_test)
     with open("dbn.pickle", "wb+") as f:
         pickle.dump(dbn, f)

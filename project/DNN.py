@@ -83,8 +83,8 @@ class DNN:
                          minibatch_size: int, verbose: bool = False):
 
         def cost(true_labels, predicted_labels):
-            return -np.sum(true_labels * np.log(predicted_labels) + (1 - true_labels) * np.log(1 - predicted_labels))\
-                    / predicted_labels.shape[0]
+            return -np.sum(true_labels * np.log(predicted_labels) + (1 - true_labels) * np.log(1 - predicted_labels)) \
+                   / predicted_labels.shape[0]
 
         N = X.shape[0]
 
@@ -109,11 +109,17 @@ class DNN:
                 dZ, dw, db, dA = [], [], [], []
                 dA.append(estimated_labels - labels_minibatch)
                 for k in range(len(self._DNN) - 1, -1, -1):
-                    dZ.append(dA[-1])  # No activation function
+
+                    if k < len(self._DNN) - 1:
+                        dZ.append(dA[-1] * sorties[k] * (1 - sorties[k]))
+                    else:
+                        dZ.append(dA[-1])
+
                     if k == 0:
                         dw.append(X_minibatch.T @ dZ[-1] / batch_size)
                     else:
-                        dw.append(sorties[k-1].T @ dZ[-1] / batch_size)
+                        dw.append(sorties[k - 1].T @ dZ[-1] / batch_size)
+
                     db.append(np.sum(dZ[-1], axis=0) / batch_size)
                     dA.append(dZ[-1] @ self._DNN[k].w.T)
 
