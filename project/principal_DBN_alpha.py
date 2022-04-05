@@ -19,7 +19,7 @@ from project.data_reader import lire_alpha_digit, show_alpha_digits_images
 network_size = [320, 160, 100, 50, 10]
 nb_iter_train = 1000
 nb_iter_generate = 200
-lr = 0.1
+lr = 0.05
 mini_batch_size = 20
 data_size = 1000
 

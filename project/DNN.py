@@ -83,7 +83,8 @@ class DNN:
                          minibatch_size: int, verbose: bool = False):
 
         def cost(true_labels, predicted_labels):
-            return -np.sum(true_labels * np.log(predicted_labels) + (1 - true_labels) * np.log(1 - predicted_labels))
+            return -np.sum(true_labels * np.log(predicted_labels) + (1 - true_labels) * np.log(1 - predicted_labels))\
+                    / predicted_labels.shape[0]
 
         N = X.shape[0]
 

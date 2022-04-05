@@ -5,7 +5,7 @@ import tqdm.notebook as tqdm
 
 
 class RBM:
-    def __init__(self, p: int, q: int, var: float = 10e-2):
+    def __init__(self, p: int, q: int, var: float = 10e-4):
         self.p = p
         self.q = q
         self.w = np.random.normal(0, np.sqrt(var), size=(p, q))
