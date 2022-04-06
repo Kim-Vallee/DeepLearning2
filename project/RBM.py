@@ -15,6 +15,7 @@ class RBM:
     def entree_sortie(self, v):
         """
         Train from in to out.
+
         :param v: matrice m*p avec m la taille du batch (binaire)
         :type v: matrice
         """
@@ -23,6 +24,7 @@ class RBM:
     def sortie_entree(self, h):
         """
         Train from out to in.
+
         :param h: matrice m*q avec m la taille du batch (binaire)
         :type h: matrice
         """
@@ -79,5 +81,5 @@ class RBM:
         return v
 
     def calcul_softmax(self, X: np.ndarray) -> np.ndarray:
-        h = self.entree_sortie(X)
-        return np.exp(h) / np.sum(np.exp(h))
+        h = X @ self.w + self.b
+        return np.exp(h) / np.sum(np.exp(h), axis=1, keepdims=True)

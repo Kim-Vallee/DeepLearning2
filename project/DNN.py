@@ -11,6 +11,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+import copy
 from typing import List, Tuple
 
 import numpy as np
@@ -83,12 +84,11 @@ class DNN:
                          minibatch_size: int, verbose: bool = False):
 
         def cost(true_labels, predicted_labels):
-            return -np.sum(true_labels * np.log(predicted_labels) + (1 - true_labels) * np.log(1 - predicted_labels)) \
-                   / predicted_labels.shape[0]
+            return -np.sum(true_labels * np.log(predicted_labels)) / X.shape[0]
 
         N = X.shape[0]
 
-        for i in range(nb_iter):
+        for _ in range(nb_iter):
             seed = np.random.randint(0, 10000)
             X_copy = X.copy()
             labels_copy = labels.copy()
@@ -97,44 +97,46 @@ class DNN:
             np.random.seed(seed)
             np.random.shuffle(labels_copy)
 
+            DNN_copy = copy.deepcopy(self._DNN)
+
             # Mini-batch (Should I copy the RBMs?)
             for j in range(0, N, minibatch_size):
-                X_minibatch = X_copy[i: min(i + minibatch_size, N)]
-                labels_minibatch = labels_copy[i: min(i + minibatch_size, N)]
+                # Taking only the minibatch
+                X_minibatch = X_copy[j: min(j + minibatch_size, N)]
+                labels_minibatch = labels_copy[j: min(j + minibatch_size, N)]
+
+                # Getting batch size
                 batch_size = X_minibatch.shape[0]
+
+                # Forward pass
                 sorties, probs = self.entree_sortie_reseau(X_minibatch)
                 estimated_labels = probs
 
                 # Computing the gradient
-                dZ, dw, db, dA = [], [], [], []
-                dA.append(estimated_labels - labels_minibatch)
-                for k in range(len(self._DNN) - 1, -1, -1):
-
-                    if k < len(self._DNN) - 1:
-                        dZ.append(dA[-1] * sorties[k] * (1 - sorties[k]))
-                    else:
-                        dZ.append(dA[-1])
-
+                C = estimated_labels - labels_minibatch
+                for k in range(len(DNN_copy) - 1, -1, -1):
+                    # Updating the weights
                     if k == 0:
-                        dw.append(X_minibatch.T @ dZ[-1] / batch_size)
+                        dw = X_minibatch.T @ C / batch_size
                     else:
-                        dw.append(sorties[k - 1].T @ dZ[-1] / batch_size)
+                        dw = sorties[k-1].T @ C / batch_size
 
-                    db.append(np.sum(dZ[-1], axis=0) / batch_size)
-                    dA.append(dZ[-1] @ self._DNN[k].w.T)
+                    # Updating the biaises
+                    db = np.sum(C, axis=0) / batch_size
 
-                # Reverting the gradient
-                dw = dw[::-1]
-                db = db[::-1]
+                    # Updating the weights and the biases of the DNN
+                    self._DNN[k].w -= learning_rate * dw
+                    self._DNN[k].b -= learning_rate * db
 
-                # Updating the weights
-                for k in range(len(self._DNN)):
-                    self._DNN[k].w -= learning_rate * dw[k]
-                    self._DNN[k].b -= learning_rate * db[k]
+                    # Updating the constant derivation
+                    if k == 0:
+                        C = (C @ DNN_copy[k].w.T) * X_minibatch * (1 - X_minibatch)
+                    else:
+                        C = (C @ DNN_copy[k].w.T) * sorties[k-1] * (1 - sorties[k-1])
 
             if verbose:
                 _, probs = self.entree_sortie_reseau(X)
-                print(cost(labels, probs))  # BCE
+                print(f"\r{cost(labels, probs)}")  # Cross-entropy
 
     def test(self, X: np.ndarray, labels: np.ndarray) -> float:
         sorties, probs = self.entree_sortie_reseau(X)
