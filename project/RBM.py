@@ -67,7 +67,7 @@ class RBM:
             H = self.entree_sortie(X)
             X_rec = self.sortie_entree(H)
             if verbose:
-                iter_bar.set_description(f"Reconstruction : {np.mean((X - X_rec) ** 2)}")
+                iter_bar.set_description(f"Reconstruction : {round(np.mean((X - X_rec) ** 2) * 1, 3)}")
 
         if verbose:
             batch_bar.close()

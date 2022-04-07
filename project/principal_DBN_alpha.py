@@ -13,8 +13,8 @@
 # that they have been altered from the originals.
 import numpy as np
 
-from project.DNN import DNN
-from project.data_reader import lire_alpha_digit, show_alpha_digits_images
+from DNN import DNN
+from data_reader import lire_alpha_digit, show_alpha_digits_images
 
 network_size = [320, 160, 100, 50, 10]
 nb_iter_train = 1000
@@ -23,7 +23,7 @@ lr = 0.05
 mini_batch_size = 20
 data_size = 1000
 
-digits = lire_alpha_digit([5, 8])
+digits = lire_alpha_digit(list(range(10)))
 np.random.shuffle(digits)
 digits = digits[:data_size]
 
@@ -40,8 +40,11 @@ digits = digits[:data_size]
 
 # region DBN test
 dbn = DNN(np.array(network_size))
+dbn2 = DNN(np.array(network_size))
 dbn.pretrain(digits, nb_iter_train, lr, mini_batch_size)
 
 imgs = dbn.generer_image(nb_iter_generate, 10)
+imgs2 = dbn2.generer_image(nb_iter_generate, 10)
 show_alpha_digits_images(imgs)
+show_alpha_digits_images(imgs2)
 # endregion

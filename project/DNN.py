@@ -12,6 +12,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 import copy
+import sys
 from typing import List, Tuple
 
 import numpy as np
@@ -45,7 +46,7 @@ class DNN:
         :type minibatch_size: int
         """
 
-        x = X
+        x = X.copy()
         for i, rbm in enumerate(self._DNN):
             if verbose:
                 print(f"Pretraining layer {i}")
@@ -90,7 +91,7 @@ class DNN:
 
         N = X.shape[0]
 
-        for _ in range(nb_iter):
+        for epoch in range(nb_iter):
             seed = np.random.randint(0, 10000)
             X_copy = X.copy()
             labels_copy = labels.copy()
@@ -137,11 +138,12 @@ class DNN:
                         C = (C @ DNN_copy[k].w.T) * sorties[k - 1] * (1 - sorties[k - 1])
 
             if verbose:
-                _, probs = self.entree_sortie_reseau(X)
-                print(f"\r{cost(labels, probs)}")  # Cross-entropy
+                temp, probs = self.entree_sortie_reseau(X)
+                sys.stdout.write(f"\rEpoch {epoch} : {cost(labels, probs)}")
+                sys.stdout.flush()
 
     def test(self, X: np.ndarray, labels: np.ndarray) -> float:
         sorties, probs = self.entree_sortie_reseau(X)
-        estimated_labels = sorties[-1]
+        estimated_labels = np.argmax(probs, axis=1)
         error_rate = np.sum(estimated_labels != labels) / X.shape[0]
         return error_rate
