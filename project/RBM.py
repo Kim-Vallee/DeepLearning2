@@ -1,7 +1,7 @@
 from typing import Union
 
 import numpy as np
-import tqdm.notebook as tqdm
+import tqdm as tqdm
 
 
 class RBM:
@@ -58,9 +58,9 @@ class RBM:
                 grad_a = v_0 - v_1
                 grad_b = p_h_v0 - p_h_v1
                 grad_w = v_0.T @ p_h_v0 - v_1.T @ p_h_v1
-                self.a += epsilon * np.sum(grad_a, axis=0)
-                self.b += epsilon * np.sum(grad_b, axis=0)
-                self.w += epsilon * grad_w
+                self.a += epsilon * np.sum(grad_a, axis=0) / t_batch
+                self.b += epsilon * np.sum(grad_b, axis=0) / t_batch
+                self.w += epsilon * grad_w / t_batch
                 if verbose:
                     batch_bar.update(1)
 

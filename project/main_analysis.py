@@ -26,7 +26,7 @@ for n_couches in range_couches:
 
     # Pretrain
     print("Pretrain")
-    dbn_pretrained.pretrain(images_train, nb_iter_train, lr, mini_batch_size)
+    dbn_pretrained.pretrain(images_train, nb_iter_train // 10, lr, mini_batch_size, verbose=True)
 
     # Train
     print("Pretrained model")
@@ -38,7 +38,6 @@ for n_couches in range_couches:
     error_rates.append((dbn_pretrained.test(images_test, labels_test), dbn.test(images_test, labels_test)))
 
 error_rates = np.array(error_rates)
-print("wait")
 plt.plot(range_couches, error_rates[:, 0], label="Pretrained")
 plt.plot(range_couches, error_rates[:, 1], label="Not pretrained")
 plt.xlabel("Number of layers")

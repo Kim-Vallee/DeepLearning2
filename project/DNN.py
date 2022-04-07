@@ -31,7 +31,7 @@ class DNN:
         for i in range(network_shape.size - 1):
             self._DNN[i] = RBM(network_shape[i], network_shape[i + 1])
 
-    def pretrain(self, X: np.ndarray, nb_iter: int, learning_rate: float, minibatch_size: int):
+    def pretrain(self, X: np.ndarray, nb_iter: int, learning_rate: float, minibatch_size: int, verbose: bool = False):
         """
         Pretrain the DNN.
 
@@ -46,8 +46,10 @@ class DNN:
         """
 
         x = X
-        for rbm in self._DNN:
-            rbm.train(x, nb_iter, minibatch_size, learning_rate, verbose=False)
+        for i, rbm in enumerate(self._DNN):
+            if verbose:
+                print(f"Pretraining layer {i}")
+            rbm.train(x, nb_iter, minibatch_size, learning_rate, verbose=verbose)
             x = rbm.entree_sortie(x)
 
     def generer_image(self, nb_iter: int, nb_img: int) -> np.ndarray:
@@ -119,7 +121,7 @@ class DNN:
                     if k == 0:
                         dw = X_minibatch.T @ C / batch_size
                     else:
-                        dw = sorties[k-1].T @ C / batch_size
+                        dw = sorties[k - 1].T @ C / batch_size
 
                     # Updating the biaises
                     db = np.sum(C, axis=0) / batch_size
@@ -132,7 +134,7 @@ class DNN:
                     if k == 0:
                         C = (C @ DNN_copy[k].w.T) * X_minibatch * (1 - X_minibatch)
                     else:
-                        C = (C @ DNN_copy[k].w.T) * sorties[k-1] * (1 - sorties[k-1])
+                        C = (C @ DNN_copy[k].w.T) * sorties[k - 1] * (1 - sorties[k - 1])
 
             if verbose:
                 _, probs = self.entree_sortie_reseau(X)
