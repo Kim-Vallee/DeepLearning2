@@ -124,6 +124,6 @@ def nb_train_data():
         pickle.dump([range_data, error_rates, "Number of data", "Error rate", "Error rate vs number of data"], f)
     
 if __name__ == "__main__":
-    nb_neurons_per_layer()
+    # nb_neurons_per_layer()
     nb_layers()
     nb_train_data()
