@@ -122,8 +122,25 @@ def nb_train_data():
     # plt.savefig("error_rate_vs_number_of_data.png")
     with open('error_rate_vs_number_of_data.pickle', "wb+") as f:
         pickle.dump([range_data, error_rates, "Number of data", "Error rate", "Error rate vs number of data"], f)
-    
+
+
+def best_model():
+    nb_couches = 5
+    nb_neurons = 200
+    network_shape = [784] + [nb_neurons] * nb_couches + [10]
+
+    dbn = DNN(np.array(network_shape))
+    dbn.pretrain(images_train, nb_iter_pretrain, lr, mini_batch_size)
+
+    dbn.retropropagation(images_train, labels_train, nb_iter_train, lr, mini_batch_size)
+    print(dbn.test(images_test, labels_test))
+
+    with open('best_dbn.pickle', "wb+") as f:
+        pickle.dump(dbn, f)
+
+
 if __name__ == "__main__":
     # nb_neurons_per_layer()
-    nb_layers()
-    nb_train_data()
+    # nb_layers()
+    # nb_train_data()
+    best_model()
