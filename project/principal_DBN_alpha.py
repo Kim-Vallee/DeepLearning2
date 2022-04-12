@@ -27,18 +27,6 @@ digits = lire_alpha_digit(list(range(10)))
 np.random.shuffle(digits)
 digits = digits[:data_size]
 
-# region RBM test
-# rbm = RBM(network_size[0], network_size[-1])
-# rbm.train(digits, nb_iter, mini_batch_size, lr, verbose=True)
-#
-# imgs = rbm.generer_image_RBM(nb_iter, 10)
-# for img in imgs:
-#     img = img.reshape(20, 16)
-#     plt.imshow(img, cmap=plt.get_cmap('gray'))
-#     plt.show()
-# endregion
-
-# region DBN test
 dbn = DNN(np.array(network_size))
 dbn2 = DNN(np.array(network_size))
 dbn.pretrain(digits, nb_iter_train, lr, mini_batch_size)
@@ -47,4 +35,3 @@ imgs = dbn.generer_image(nb_iter_generate, 10)
 imgs2 = dbn2.generer_image(nb_iter_generate, 10)
 show_alpha_digits_images(imgs)
 show_alpha_digits_images(imgs2)
-# endregion

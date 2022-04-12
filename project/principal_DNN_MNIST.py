@@ -11,13 +11,10 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+import matplotlib.pyplot as plt
 import numpy as np
-from mnist import MNIST
 
 from project.DNN import DNN
-import matplotlib.pyplot as plt
-import pickle
-
 from project.data_reader import get_mnist_array
 
 network_size = [784, 200, 200, 30, 10]
@@ -38,10 +35,8 @@ labels_train = np.eye(10)[labels_train]
 labels_test = np.eye(10)[labels_test]
 
 dbn = DNN(np.array(network_size))
-# dbn.pretrain(images_train, nb_iter_train, lr, mini_batch_size)
 dbn.retropropagation(images_train, labels_train, nb_iter_train, lr, mini_batch_size, True)
 error_rate = dbn.test(images_test, labels_test)
-
 
 first_ten_images_test = np.array(images_test[:10])
 first_ten_labels_test = np.array(labels_test[:10])
