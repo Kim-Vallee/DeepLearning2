@@ -11,3 +11,4 @@ python-mnist
 scipy
 six
 tqdm
+tensorflow
