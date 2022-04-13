@@ -28,10 +28,11 @@ class Sampling(layers.Layer):
         epsilon = tf.keras.backend.random_normal(shape=(batch, dim))
         return z_mean + tf.exp(0.5 * z_log_var) * epsilon
 
+
 class VAE(keras.Model):
     def __init__(self, **kwargs):
         super(VAE, self).__init__(**kwargs)
-        self.latent_dim = 2
+        self.latent_dim = 10
         self.encoder = None
         self.decoder = None
         self.total_loss_tracker = keras.metrics.Mean(name="total_loss")

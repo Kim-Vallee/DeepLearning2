@@ -133,6 +133,20 @@ def nb_train_data(range_data: Iterable = (1000, 3000, 7000, 10000, 30000, 60000)
             pickle.dump([range_data, error_rates, "Number of data", "Error rate", "Error rate vs number of data"], f)
 
 
+def plot_data_from_pickle(pickle_file: str):
+    with open(pickle_file + ".pickle", "rb") as f:
+        data = pickle.load(f)
+
+    plt.plot(data[0], data[1][:, 0], label="Pretrained")
+    plt.plot(data[0], data[1][:, 1], label="Not pretrained")
+    plt.xlabel(data[2])
+    plt.ylabel(data[3])
+    plt.title(data[4])
+    plt.legend()
+    plt.savefig(pickle_file + ".png")
+    plt.show()
+
+
 if __name__ == "__main__":
     nb_layers(plot=False, save_pickle=True)
     nb_neurons_per_layer(plot=False, save_pickle=True)

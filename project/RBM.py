@@ -40,14 +40,16 @@ class RBM:
             iter_bar = range(nb_iter)
             batch_bar = range(0, n, taille_batch)
 
+        X_copy = X.copy()
+
         for _ in iter_bar:
-            np.random.shuffle(X)
+            np.random.shuffle(X_copy)
 
             if verbose:
                 batch_bar.reset()
 
             for iter_batch in range(0, n, taille_batch):
-                X_batch = X[iter_batch: min(iter_batch + taille_batch, n)]
+                X_batch = X_copy[iter_batch: min(iter_batch + taille_batch, n)]
                 t_batch = X_batch.shape[0]
                 v_0 = X_batch
                 p_h_v0 = self.entree_sortie(v_0)

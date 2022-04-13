@@ -12,7 +12,6 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-import matplotlib.pyplot as plt
 import numpy as np
 from tensorflow import keras
 
@@ -37,20 +36,27 @@ images_test = (images_test > 127) * 1
 labels_train = np.eye(10)[labels_train]
 labels_test = np.eye(10)[labels_test]
 
+# Prepare the models
 rbm = RBM(network_size[0], network_size[-1])
 dbn = DNN(np.array(network_size))
 vae = VAE()  # https://keras.io/examples/generative/vae/
-vae.compile(optimizer=keras.optimizers.Adam())
+vae.compile(optimizer=keras.optimizers.SGD(learning_rate=lr, momentum=0.0), loss=keras.losses.CategoricalCrossentropy(),
+            verbose=0)
 
-first_ten_images_test = np.array(images_test[:10])
-first_ten_labels_test = np.array(labels_test[:10])
-_, first_ten_labels_test_estimated = dbn.entree_sortie_reseau(first_ten_images_test)
+# Train the models
+rbm.train(images_train, nb_iter_train, mini_batch_size, lr)
+dbn.pretrain(images_train, nb_iter_train, lr, mini_batch_size)
+vae.fit(images_train.reshape(-1, 28, 28), epochs=nb_iter_train, batch_size=mini_batch_size)
 
-first_ten_labels_test_estimated = np.array(first_ten_labels_test_estimated)
+# Generate images
+nb_imgs = 10
+imgs_rbm = rbm.generer_image_RBM(nb_iter_generate, nb_imgs)
+imgs_dbn = dbn.generer_image(nb_iter_generate, nb_imgs)
+imgs_vae = []
+for i in range(nb_imgs):
+    imgs_vae.append(vae.decoder.predict(np.eye(10)[i].flatten())[0].reshape(28, 28))
 
-for i in range(10):
-    plt.imshow(first_ten_images_test[i].reshape(28, 28))
-    print(first_ten_labels_test_estimated[i])
-    plt.title(
-        f"Image {i}, true label : {first_ten_labels_test[i].argmax()}, estimated label: {first_ten_labels_test_estimated[i].argmax()}")
-    plt.show()
+imgs_vae = np.array(imgs_vae)
+
+# Save the images
+np.savez('images_rbm.npz', imgs_rbm=imgs_rbm, imgs_dbn=imgs_dbn, imgs_vae=imgs_vae)
