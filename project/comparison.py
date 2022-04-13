@@ -40,13 +40,12 @@ labels_test = np.eye(10)[labels_test]
 rbm = RBM(network_size[0], network_size[-1])
 dbn = DNN(np.array(network_size))
 vae = VAE()  # https://keras.io/examples/generative/vae/
-vae.compile(optimizer=keras.optimizers.SGD(learning_rate=lr, momentum=0.0), loss=keras.losses.CategoricalCrossentropy(),
-            verbose=0)
+vae.compile(optimizer=keras.optimizers.SGD(learning_rate=lr, momentum=0.0), loss=keras.losses.CategoricalCrossentropy())
 
 # Train the models
 rbm.train(images_train, nb_iter_train, mini_batch_size, lr)
 dbn.pretrain(images_train, nb_iter_train, lr, mini_batch_size)
-vae.fit(images_train.reshape(-1, 28, 28), epochs=nb_iter_train, batch_size=mini_batch_size)
+vae.fit(images_train.reshape(-1, 28, 28), epochs=nb_iter_train, batch_size=mini_batch_size, verbose=0)
 
 # Generate images
 nb_imgs = 10
