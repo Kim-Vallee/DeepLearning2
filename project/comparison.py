@@ -15,10 +15,10 @@
 import numpy as np
 from tensorflow import keras
 
-from project.DNN import DNN
-from project.RBM import RBM
-from project.VAE import VAE
-from project.data_reader import get_mnist_array
+from DNN import DNN
+from RBM import RBM
+from VAE import VAE
+from data_reader import get_mnist_array
 
 network_size = [784, 200, 200, 30, 10]
 nb_iter_train = 100
