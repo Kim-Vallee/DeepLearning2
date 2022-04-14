@@ -147,7 +147,20 @@ def plot_data_from_pickle(pickle_file: str):
     plt.show()
 
 
+def best_model():
+    network_shape = [784] + [200] * 5 + [10]
+    dbn = DNN(np.array(network_shape))
+
+    dbn.pretrain(images_train, nb_iter_pretrain, lr, mini_batch_size, verbose=False)
+    dbn.retropropagation(images_train, labels_train, nb_iter_train, lr, mini_batch_size, False)
+
+    error_rate = dbn.test(images_test, labels_test)
+
+    with open("best_model.pickle", "wb+") as f:
+        pickle.dump(dbn, f)
+
+    print("Error rate:", error_rate)
+
+
 if __name__ == "__main__":
-    nb_layers(plot=False, save_pickle=True)
-    nb_neurons_per_layer(plot=False, save_pickle=True)
-    nb_train_data(plot=False, save_pickle=True)
+    best_model()
