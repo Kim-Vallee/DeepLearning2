@@ -148,7 +148,7 @@ def plot_data_from_pickle(pickle_file: str):
 
 
 def best_model():
-    network_shape = [784] + [200] * 5 + [10]
+    network_shape = [784] + [300] * 5 + [10]
     dbn = DNN(np.array(network_shape))
 
     dbn.pretrain(images_train, nb_iter_pretrain, lr, mini_batch_size, verbose=False)
