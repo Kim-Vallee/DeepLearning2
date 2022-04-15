@@ -1,2 +1,0 @@
-nohup: ignoring input
-Error rate: 0.0337

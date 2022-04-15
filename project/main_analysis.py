@@ -1,3 +1,5 @@
+import os
+
 import pickle
 from typing import Iterable
 
@@ -52,7 +54,7 @@ def nb_neurons_per_layer(range_neurons: Iterable = (100, 200, 300, 400, 500, 600
         plt.savefig("error_rate_vs_number_of_neurons.png")
 
     if save_pickle:
-        with open('error_rate_vs_number_of_neurons.pickle', "wb+") as f:
+        with open(os.path.join("pickle_save", 'error_rate_vs_number_of_neurons.pickle'), "wb+") as f:
             pickle.dump([range_neurons, error_rates, "Number of neurons per layers", "Error rate",
                          "Error rate vs number of neurons per layers"], f)
 
@@ -89,7 +91,7 @@ def nb_layers(range_couches: Iterable = (2, 3, 4, 5), plot: bool = True, save_pi
         plt.savefig("error_rate_vs_number_of_layers.png")
 
     if save_pickle:
-        with open('error_rate_vs_number_of_layers.pickle', "wb+") as f:
+        with open(os.path.join("pickle_save", 'error_rate_vs_number_of_layers.pickle'), "wb+") as f:
             pickle.dump(
                 [range_couches, error_rates, "Number of layers", "Error rate", "Error rate vs number of layers"], f)
 
@@ -129,12 +131,12 @@ def nb_train_data(range_data: Iterable = (1000, 3000, 7000, 10000, 30000, 60000)
         plt.savefig("error_rate_vs_number_of_data.png")
 
     if save_pickle:
-        with open('error_rate_vs_number_of_data.pickle', "wb+") as f:
+        with open(os.path.join("pickle_save", 'error_rate_vs_number_of_data.pickle'), "wb+") as f:
             pickle.dump([range_data, error_rates, "Number of data", "Error rate", "Error rate vs number of data"], f)
 
 
 def plot_data_from_pickle(pickle_file: str):
-    with open(pickle_file + ".pickle", "rb") as f:
+    with open(os.path.join("pickle_save", pickle_file + ".pickle"), "rb") as f:
         data = pickle.load(f)
 
     plt.plot(data[0], data[1][:, 0], label="Pretrained")
@@ -156,7 +158,7 @@ def best_model():
 
     error_rate = dbn.test(images_test, labels_test)
 
-    with open("best_model.pickle", "wb+") as f:
+    with open(os.path.join("pickle_save", "best_model.pickle"), "wb+") as f:
         pickle.dump(dbn, f)
 
     print("Error rate:", error_rate)

@@ -1,4 +1,4 @@
-# DeepLearning II project of telecom Paris
+# DeepLearning II project of Telecom Paris
 
 ## Links
 
